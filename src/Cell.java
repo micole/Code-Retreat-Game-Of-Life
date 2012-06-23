@@ -1,6 +1,10 @@
 import java.util.List;
 
-
+/**
+ * 
+ * @author micole
+ *
+ */
 public class Cell {
 	public List<Cell> Neighbors;
 	public int X;
