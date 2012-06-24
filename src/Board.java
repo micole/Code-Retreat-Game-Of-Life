@@ -1,27 +1,46 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+/**
+ * 
+ * @author micole This class was created during the CodeRetreatCHS, and then
+ *         cleaned up the next day.
+ */
 public class Board {
 
-	Cell board[][] = new Cell[5][5];
-	Cell temp[][] = new Cell[5][5];
+	Cell board[][];
+	Cell temp[][];
+	int width;
+	int height;
 
-	public Board() {
+	/**
+	 * Create the board with the width and height
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	public Board(int width, int height) {
+		this.width = width;
+		this.height = height;
+		board = new Cell[height][width];
+		temp = new Cell[height][width];
+
 		/**
 		 * creation of the cells
 		 */
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.height; j++) {
 				board[i][j] = new Cell(i, j);
-				temp[i][j] = new Cell(i,j);
+				temp[i][j] = new Cell(i, j);
 			}
 		}
 
 		/**
 		 * creation of the neighbors
 		 */
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.height; j++) {
 				List<Cell> arrayNextTo = new ArrayList<Cell>();
 				for (int k = -1; k < 2; k++) {
 					for (int l = -1; l < 2; l++) {
@@ -29,7 +48,7 @@ public class Board {
 							try {
 								arrayNextTo.add(board[i + k][j + l]);
 							} catch (Exception e) {
-								//System.out.println("ERROR");
+								// System.out.println("ERROR");
 							}
 						}
 					}
@@ -38,65 +57,64 @@ public class Board {
 				temp[i][j].setNeighbors(arrayNextTo);
 			}
 		}
-		
-		setShape();
-		
-		for (int x = 0; x < 5; x++){
-			tick();
-			for(int i = 0; i < 5; i++){
-				for(int j = 0; j < 5; j++){
-					if(board[i][j].isAlive){
-						System.out.print("1");
-					}
-					else{
-						System.out.print("0");
-					}
-				}
-				System.out.print("\n");
-			}
-			System.out.print("\n\n\n");
-			//System.out.println(board);
-		}
-		//System.out.println(board[3][3]);
-		//System.out.println(board[3][3].Neighbors.size());
-	}
-	
-	private void setShape() {
-		board[2][1].setState(true);
-		board[2][2].setState(true);
-		board[2][3].setState(true);
-		
 	}
 
-	public void tick(){
-		for (int i = 0; i < 5; i++){
-			for (int j = 0; j < 5; j++){
+	/**
+	 * Randomize the board up.
+	 */
+	public void randomize() {
+		Random r = new Random();
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.width; j++) {
+				board[i][j].setState(r.nextBoolean());
+			}
+		}
+	}
+
+	/**
+	 * print 1's on alive and 0's on dead.
+	 */
+	public String toString() {
+		String string = "";
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.height; j++) {
+				if (board[i][j].getState()) {
+					string += "1";
+				} else {
+					string += "0";
+				}
+			}
+			string += "\n";
+		}
+		return (string);
+	}
+
+	/**
+	 * run one cycle of the game.
+	 */
+	public void tick() {
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.height; j++) {
 				int sum = 0;
-				for(Cell c: board[i][j].Neighbors){
-					if (c.isAlive){
-						//System.out.println("alive");
+				for (Cell c : board[i][j].getNeighbors()) {
+					if (c.getState()) {
+						// System.out.println("alive");
 						sum++;
 					}
 				}
-				if (sum == 3){
+				if (sum == 3) {
 					temp[i][j].setState(true);
-				}
-				else if(board[i][j].isAlive && sum == 2){
+				} else if (board[i][j].getState() && sum == 2) {
 					temp[i][j].setState(true);
-				}
-				else{
+				} else {
 					temp[i][j].setState(false);
 				}
-				
 			}
 		}
-		for(int i = 0; i < 5; i++){
-			for (int j = 0; j < 5; j++){
-				board[i][j].isAlive = temp[i][j].isAlive;
+		for (int i = 0; i < this.height; i++) {
+			for (int j = 0; j < this.height; j++) {
+				board[i][j].setState(temp[i][j].getState());
 			}
 		}
-		//board = temp;
-		
 	}
-
 }
